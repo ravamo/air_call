@@ -1,47 +1,66 @@
-# air_call
-## The main idea of my solution is:
-Create a delta table with the daily or hourly information, once we have that information, we insert it into the fact table with a left outer join. 
-So we only insert the new users,  taking into account the repository and the user's name.
+ Data Engineer Assignment
 
-## Consideration:
-* The table has a PK per repository and name and would have to be partitions with the same columns.
-* You would have to do a delete with the same period, because  if we have rerun the pipeline we need to remove the olds rows.
-* Rate limit, you could look for more efficient algorithms such as Leaky Bucket or Fixed Window.
+The goal of this test is to evaluate your ability to:
 
-## Test:
-I have generated a server mock using postman and some unit tests have been done.
+- Design a simple but reliable crawler
+- Process data and compute metrics
+- Build a JSON API delivering these metrics
 
-## Problems:
-I have had several problems with the API, mainly the speed limit, the second with trying to develop an algorithm for failures (in my opinion, this responsibility should have a three-part tool like airflow or Azkaban).
+## 🗒 Instructions
 
-## Data base:
-```` sql
-DROP TABLE `fact_commit`;
-CREATE TABLE `fact_commit` (
-  `date_commit` varchar(10) ,
-  `repository` varchar(30),
-  `user` varchar(30),
-  PRIMARY KEY (`repository`,`user`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+You need to build an app that computes the number of monthly new contributors for each [Facebook's public repositories](https://github.com/facebook), from the month of their creation until now.
+A new contributor is someone who did a commit for the first time in a repository.
 
-INSERT INTO fact_commit (date_commit,repository,user) 
-SELECT date(s.date_commit) as date_commit, s.repository, s.user
-  FROM delta_commit s
-  LEFT OUTER JOIN aircall.fact_commit a 
-  ON a.repository = s.repository
-  AND a.user = s.user
-  WHERE a.user IS NULL;
-  ````
+To ease our review, you also need to build a web server that provides a JSON API delivering the metrics you computed.
 
-# Docker:
-````sh
- docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw  -p 3306:3306 -d mysql:5.7
- ````
-  
-## Librerias:  
-time
-dateutil
-requests
-pandas
-sqlalchemy
-requests
+You can access the GitHub API using your personal account. There are many ways to retrieve the needed data, choose the most simple one, you do not need to handle more than what is required for the app.
+
+### 🖥 Backend
+
+Build a **straightforward** crawler able to fetch data from GitHub API in a reliable and efficient way. The crawler needs to handle API errors and rate limit so that API calls are retried properly. Parallelize the work when it's possible.
+
+The crawler needs to produce a dataset like this:
+
+|repository|date|number_of_new_contributors|
+|---|---|---|
+|instantsearch.js|2016-06-01|10|
+|algoliasearch-js-client|2016-06-01|5|
+|algoliasearch-ruby-client|2016-06-01|3|
+|instantsearch.js|2016-07-01|8|
+|algoliasearch-js-client|2016-07-01|7|
+|algoliasearch-ruby-client|2016-07-01|7|
+|...|...|...|
+
+You can use any technology for this as long as it's reliable, fault tolerant, efficient and scalable.
+Imagine you are building Aircall new data platform, do not use hacky solutions. Don't design the solution as a Backend Engineer but as a Data Engineer
+
+The subject is just a pretext to a future discussion during the debriefing.
+
+### 📱 API
+
+Build a simple web server that provide a JSON API delivering the results you previously stored. You are free to design the API the way you want.
+
+
+We'll evaluate:
+
+- the usage of the GitHub API,
+- the code quality of your crawler and API and engineering practices,
+- the developer experience, ease of running and documentation.
+- Data Architecture, even more Infra
+- Data Modeling
+
+If feasible, make sure that you put the instructions on how to preview your application and run it. So that we can easily see the result.
+
+When finished, we will planned together a quick presentation by Hangout or in our offices to review your work and talk about design and code.
+
+## 🆒 Bonus points
+
+We welcome any feature or addition to your project that you think
+makes it better and gives you more chances.
+
+Things like tests, tooling and attention to detail are much appreciated but not mandatory.
+
+## 🤔 Questions
+
+
+🙋‍♀️ Good luck!
