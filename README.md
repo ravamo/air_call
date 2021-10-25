@@ -60,6 +60,10 @@ makes it better and gives you more chances.
 
 Things like tests, tooling and attention to detail are much appreciated but not mandatory.
 
+## Tips
+ request lib **httpx**
+ unit test lib https://pypi.org/project/pytest-httpx/
+
 ## 🤔 Questions
 
 
